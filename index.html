@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Biohaxys Hero Banner</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { height: 100%; background: black; font-family: 'Arial', sans-serif; }
+
+    .hero-container {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    video {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      top: 0; left: 0;
+      z-index: 0;
+    }
+
+    .overlay {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      background: rgba(0, 0, 0, 0.3);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      text-align: center;
+      padding: 2rem;
+    }
+
+    .overlay h1 {
+      font-size: 3rem;
+      margin-bottom: 1.2rem;
+      color: #ffffff;
+      white-space: nowrap;
+      overflow: hidden;
+      border-right: 3px solid #0096FF;
+      animation: blinkCursor 0.7s infinite;
+      min-height: 3.6rem;
+    }
+
+    @keyframes blinkCursor {
+      0%, 100% { border-color: transparent; }
+      50% { border-color: #0096FF; }
+    }
+
+    .overlay a {
+      padding: 0.8rem 1.8rem;
+      font-size: 1.1rem;
+      font-weight: bold;
+      text-decoration: none;
+      color: black;
+      background: white;
+      border-radius: 1px;
+      transition: all 0.3s ease;
+    }
+
+    .overlay a:hover {
+      background: #0096FF;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+
+<div class="hero-container" id="hero-container">
+  <video id="heroVideo" autoplay loop muted playsinline>
+    <source src="Untitled design (2).mp4" type="video/mp4" />
+    <!-- Your browser does not support the video tag. -->
+  </video>
+
+  <div class="overlay">
+    <!-- <h1 id="sceneTitle">Cold Plunge Therapy</h1> -->
+    <!-- <a id="sceneBtn" href="#">Shop Now</a> -->
+  </div>
+</div>
+
+<script>
+  const video = document.getElementById("heroVideo");
+  const title = document.getElementById("sceneTitle");
+  const button = document.getElementById("sceneBtn");
+
+  const scenes = [
+    { time: 5, title: "Cold Plunge Therapy", btn: "Shop Now", link: "#" },
+    { time: 15, title: "Infrared Sauna", btn: "Shop Now", link: "#" },
+    { time: 40, title: "Luxury Massage Chairs", btn: "Shop Now", link: "#" }
+  ];
+
+  let currentScene = -1;
+  let animationRunning = false;
+
+  function typeAndDeleteText(newText) {
+    return new Promise(resolve => {
+      let currentText = title.textContent;
+      let i = currentText.length;
+
+      // Step 1: Delete current text
+      const deleteInterval = setInterval(() => {
+        if (i > 0) {
+          title.textContent = currentText.slice(0, i - 1);
+          i--;
+        } else {
+          clearInterval(deleteInterval);
+
+          // Step 2: Type new text
+          let j = 0;
+          const typeInterval = setInterval(() => {
+            if (j < newText.length) {
+              title.textContent += newText.charAt(j);
+              j++;
+            } else {
+              clearInterval(typeInterval);
+              resolve();
+            }
+          }, 60); // typing speed
+        }
+      }, 30); // deleting speed
+    });
+  }
+
+  function updateScene() {
+    const t = video.currentTime;
+    for (let i = scenes.length - 1; i >= 0; i--) {
+      if (t >= scenes[i].time) {
+        if (currentScene !== i && !animationRunning) {
+          animationRunning = true;
+          currentScene = i;
+
+          typeAndDeleteText(scenes[i].title).then(() => {
+            button.textContent = scenes[i].btn;
+            button.href = scenes[i].link;
+            animationRunning = false;
+          });
+        }
+        break;
+      }
+    }
+    requestAnimationFrame(updateScene);
+  }
+
+  // Hover to pause/resume video
+  const container = document.getElementById("hero-container");
+  container.addEventListener("mouseenter", () => video.pause());
+  container.addEventListener("mouseleave", () => video.play());
+
+  // Start watching time once video is ready
+  video.addEventListener("loadedmetadata", () => {
+    requestAnimationFrame(updateScene);
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,62 @@
+{% schema %}
+{
+  "name": "Horizontal Scroll Hero Video",
+  "settings": [
+    {
+      "type": "url",
+      "id": "video_url",
+      "label": "Video MP4 URL",
+      "info": "Upload your MP4 video to Settings > Files and paste the URL here"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Horizontal Hero Video"
+    }
+  ]
+}
+{% endschema %}
+
+{% stylesheet %}
+.hero-video-wrapper {
+  position: relative;
+  width: 100%;
+  height: auto;
+  overflow: hidden;
+}
+
+.hero-video-wrapper video {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  display: block;
+  pointer-events: auto;
+}
+{% endstylesheet %}
+
+{% javascript %}
+document.addEventListener("DOMContentLoaded", function () {
+  const video = document.querySelector(".hero-video-wrapper video");
+
+  if (video) {
+    video.addEventListener("mouseenter", () => {
+      video.pause();
+    });
+
+    video.addEventListener("mouseleave", () => {
+      video.play();
+    });
+  }
+});
+{% endjavascript %}
+
+<div class="hero-video-wrapper">
+  {% if section.settings.video_url != blank %}
+    <video autoplay muted loop playsinline>
+      <source src="{{ section.settings.video_url }}" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+  {% else %}
+    <p style="text-align: center;">Please upload and add a video URL in the section settings.</p>
+  {% endif %}
+</div>
